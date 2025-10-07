@@ -15,7 +15,7 @@ impl Player {
         ctx.set(
             self.position.x,
             self.position.y,
-            WHITE,
+            PURPLE,
             BLACK,
             to_cp437('@'),
         );
