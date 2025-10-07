@@ -28,7 +28,7 @@ impl Map {
                 let idx = map_idx(x, y);
                 match self.tiles[idx] {
                     TileType::Floor => {
-                        ctx.set(x, y, GRAY, BLACK, to_cp437('.'));
+                        ctx.set(x, y, (50, 50, 50), BLACK, to_cp437('.'));
                     }
                     TileType::Wall => {
                         ctx.set(x, y, (30, 5, 25), BLACK, to_cp437('#'));
@@ -64,8 +64,10 @@ pub fn map_idx(x: i32, y: i32) -> usize {
     ((y * SCREEN_WIDTH) + x) as usize
 }
 
+/*
 /// get (x, y) tuple of map tile given its index
 /// i.e. the inverse of `map_idx()`
 pub fn map_coords(idx: i32) -> (i32, i32) {
     (idx % SCREEN_WIDTH, idx / SCREEN_WIDTH)
 }
+*/

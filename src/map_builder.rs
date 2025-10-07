@@ -23,12 +23,56 @@ impl MapBuilder {
 
         mb.fill(TileType::Wall);
         mb.build_random_rooms(rng);
-        // mb.build_corridors(rng);
+        mb.build_corridors(rng);
         mb.player_start = mb.rooms[0].center();
 
         mb
     }
 
+    fn apply_horizontal_tunnel(&mut self, x1: i32, x2: i32, y: i32) {
+        use std::cmp::{min, max};
+        for x in min(x1, x2)..=max(x1, x2) {
+            if let Some(idx) = self.map.try_idx(Point::new(x, y)) {
+                self.map.tiles[idx as usize] = TileType::Floor;
+            }
+        }
+    }
+
+    fn apply_vertical_tunnel(&mut self, y1: i32, y2: i32, x: i32) {
+        use std::cmp::{min, max};
+        for y in min(y1, y2)..=max(y1, y2) {
+            if let Some(idx) = self.map.try_idx(Point::new(x, y)) {
+                self.map.tiles[idx as usize] = TileType::Floor;
+            }
+        }
+    }
+
+    /// create paths between rooms
+    fn build_corridors(&mut self, rng: &mut RandomNumberGenerator) {
+        // TODO: Can this be done without clone() ?
+        let mut rooms = self.rooms.clone();
+
+        // sort rooms by their center point so we're more likely to 
+        // connect adjacent rooms
+        rooms.sort_by(|a, b| a.center().x.cmp(&b.center().x));
+
+        // skip the first room and connect subsequent rooms back to the previous
+        for (i, room) in rooms.iter().enumerate().skip(1) {
+            let prev = rooms[i-1].center();
+            let curr = room.center();
+
+            // randomly tunnel by rows or cols first
+            if rng.range(0, 2) == 1 {
+                self.apply_horizontal_tunnel(prev.x, curr.x, prev.y);
+                self.apply_vertical_tunnel(prev.y, curr.y, curr.x);
+            } else {
+                self.apply_vertical_tunnel(prev.y, curr.y, prev.x);
+                self.apply_horizontal_tunnel(prev.x, curr.x, curr.y);
+            }
+        }
+    }
+
+    /// Creates a number of randomly sized rooms that don't overlap
     fn build_random_rooms(&mut self, rng: &mut RandomNumberGenerator) {
         while self.rooms.len() < NUM_ROOMS {
             // New room with random x, y, width, height
