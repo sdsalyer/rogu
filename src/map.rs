@@ -21,19 +21,34 @@ impl Map {
     }
 
     /// render the map in its current state
-    pub fn render(&self, ctx: &mut BTerm) {
+    pub fn render(&self, ctx: &mut BTerm, camera: &Camera) {
+        ctx.set_active_console(0);
         // y-first is faster since we are using row-first striding
-        for y in 0..SCREEN_HEIGHT {
-            for x in 0..SCREEN_WIDTH {
+        for y in camera.top_y..camera.bottom_y {
+            for x in camera.left_x..camera.right_x {
+                if self.in_bounds(Point::new(x, y)) {
                 let idx = map_idx(x, y);
                 match self.tiles[idx] {
                     TileType::Floor => {
-                        ctx.set(x, y, (50, 50, 50), BLACK, to_cp437('.'));
+                        ctx.set(
+                            x - camera.left_x,
+                            y - camera.top_y,
+                            (50, 50, 50),
+                            BLACK,
+                            to_cp437('.'),
+                        );
                     }
                     TileType::Wall => {
-                        ctx.set(x, y, (30, 5, 25), BLACK, to_cp437('#'));
+                        ctx.set(
+                            x - camera.left_x,
+                            y - camera.top_y,
+                            (30, 5, 25),
+                            BLACK,
+                            to_cp437('#'),
+                        );
                     }
                 }
+                } // end if in bounds
             } // end x loop
         } // end y loop
     }
