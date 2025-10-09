@@ -20,6 +20,7 @@ impl Map {
         }
     }
 
+    /* Now in systems/map_render.rs...
     /// render the map in its current state
     pub fn render(&self, ctx: &mut BTerm, camera: &Camera) {
         ctx.set_active_console(0);
@@ -52,6 +53,7 @@ impl Map {
             } // end x loop
         } // end y loop
     }
+    */
 
     /// check whether point is walkable
     pub fn can_enter_tile(&self, point: Point) -> bool {

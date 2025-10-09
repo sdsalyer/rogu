@@ -14,7 +14,7 @@ mod prelude {
     pub use crate::systems::*;
 
     pub use bracket_lib::prelude::*;
-    pub use legion::systems::CommandBuffer;
+    //pub use legion::systems::CommandBuffer;
     pub use legion::world::SubWorld;
     pub use legion::*;
 
@@ -72,8 +72,8 @@ impl GameState for State {
         self.resources.insert(ctx.key);
         // execute the systems scheduler
         self.systems.execute(&mut self.ecs, &mut self.resources);
-
-        // TODO: render Draw buffer
+        // render Draw buffer
+        render_draw_buffer(ctx).expect("Render error");
     }
 }
 
