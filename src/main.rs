@@ -14,7 +14,7 @@ mod prelude {
     pub use crate::systems::*;
 
     pub use bracket_lib::prelude::*;
-    //pub use legion::systems::CommandBuffer;
+    pub use legion::systems::CommandBuffer;
     pub use legion::world::SubWorld;
     pub use legion::*;
 
@@ -44,7 +44,16 @@ impl State {
         let mut rng = RandomNumberGenerator::new();
         let map_builder = MapBuilder::new(&mut rng);
 
+        // Populate player and enemies
         spawn_player(&mut ecs, map_builder.player_start);
+        map_builder
+            .rooms
+            .iter()
+            .skip(1) // 1 monster per room except the first
+            .map(|r| r.center())
+            .for_each(|pos| {
+                spawn_enemy(&mut ecs, &mut rng, pos);
+            });
 
         resources.insert(map_builder.map);
         resources.insert(Camera::new(map_builder.player_start));
