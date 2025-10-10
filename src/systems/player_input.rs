@@ -3,6 +3,8 @@ use crate::prelude::*;
 #[system]
 #[read_component(Point)]
 #[read_component(Player)]
+#[read_component(Enemy)]
+#[write_component(Health)]
 pub fn player_input(
     ecs: &mut SubWorld,
     commands: &mut CommandBuffer,
@@ -19,19 +21,49 @@ pub fn player_input(
         };
 
         // Query the ECS for the player component (tag)
-        let _ = <(Entity, &Point)>::query() // find all Point components
-            .filter(component::<Player>()) // filter to only Player tag
+        let mut players = <(Entity, &Point)>::query().filter(component::<Player>());
+        let (player, dest) = players
             .iter(ecs) // loop over SubWorld results
-            .for_each(|(entity, pos)| {
-                let dest = *pos + delta;
+            .find_map(|(entity, pos)| Some((*entity, *pos + delta)))
+            .unwrap();
+
+        let mut did_action = false;
+        let mut enemies = <(Entity, &Point)>::query().filter(component::<Enemy>());
+        if delta.x != 0 || delta.y != 0 {
+            let mut did_hit = false;
+            enemies
+                .iter(ecs)
+                .filter(|(_, pos)| **pos == dest)
+                .for_each(|(entity, _)| {
+                    did_hit = true;
+                    did_action = true;
+                    commands.push((
+                        (),
+                        WantsToAttack {
+                            attacker: player,
+                            target: *entity,
+                        },
+                    ));
+                });
+
+            if !did_hit {
+                did_action = true;
                 commands.push((
                     (),
                     WantsToMove {
-                        entity: *entity,
+                        entity: player,
                         destination: dest,
                     },
                 ));
-            });
+            }
+        }
+
+        if !did_action {
+            if let Ok(health) = ecs.entry_mut(player).unwrap().get_component_mut::<Health>() {
+                health.current = i32::min(health.max, health.current + 1);
+            }
+        }
+
         *turn_state = TurnState::PlayerTurn;
     }
 }
