@@ -19,19 +19,40 @@ pub fn player_input(
         };
 
         // Query the ECS for the player component (tag)
-        let _ = <(Entity, &Point)>::query() // find all Point components
-            .filter(component::<Player>()) // filter to only Player tag
+        let mut players = <(Entity, &Point)>::query().filter(component::<Player>());
+        let (player, dest) = players
             .iter(ecs) // loop over SubWorld results
-            .for_each(|(entity, pos)| {
-                let dest = *pos + delta;
+            .find_map(|(entity, pos)| Some((*entity, *pos + delta)))
+            .unwrap();
+
+        let mut enemies = <(Entity, &Point)>::query().filter(component::<Enemy>());
+        if delta.x != 0 || delta.y != 0 {
+            let mut did_hit = false;
+            enemies
+                .iter(ecs)
+                .filter(|(_, pos)| **pos == dest)
+                .for_each(|(entity, _)| {
+                    did_hit = true;
+                    commands.push((
+                        (),
+                        WantsToAttack {
+                            attacker: player,
+                            target: *entity,
+                        },
+                    ));
+                });
+
+            if !did_hit {
                 commands.push((
                     (),
                     WantsToMove {
-                        entity: *entity,
+                        entity: player,
                         destination: dest,
                     },
                 ));
-            });
+            }
+        }
+
         *turn_state = TurnState::PlayerTurn;
     }
 }
