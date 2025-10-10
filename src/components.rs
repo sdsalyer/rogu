@@ -19,6 +19,10 @@ pub struct WantsToMove {
 }
 
 
+#[derive(Clone, Debug, PartialEq)]
+pub struct Name(pub String);
+
+
 /// Monsters "tag"
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub struct Enemy;

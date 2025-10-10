@@ -89,8 +89,11 @@ impl GameState for State {
         // add keyboard state as a resource
         self.resources.insert(ctx.key);
 
+        // Set console for correct mouse coords
+        ctx.set_active_console(0);
+        self.resources.insert(Point::from_tuple(ctx.mouse_pos()));
+
         // execute the systems schedulers
-        // TODO: unwrap AND clone -- can they be fixed
         let current_state = self.resources.get::<TurnState>().unwrap().clone();
         match current_state {
             TurnState::AwaitingInput => self

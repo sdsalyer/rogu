@@ -5,7 +5,7 @@ use crate::prelude::*;
 #[read_component(Player)]
 pub fn hud(ecs: &SubWorld) {
     const DRAW_LAYER: usize = 2;
-    const SORT_ORDER: usize = 10000;
+    const SORT_ORDER: usize = 10_000;
     const BAR_FG: (u8, u8, u8) = RED;
     const BAR_BG: (u8, u8, u8) = BLACK;
     const HEALTH_FG: (u8, u8, u8) = WHITE;

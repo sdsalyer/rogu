@@ -5,7 +5,7 @@ use crate::prelude::*;
 #[read_component(Render)]
 pub fn entity_render(ecs: &mut SubWorld, #[resource] camera: &Camera) {
     const DRAW_LAYER: usize = 1;
-    const SORT_ORDER: usize = 5000;
+    const SORT_ORDER: usize = 5_000;
 
     let offset = Point::new(camera.left_x, camera.top_y);
     let mut draw_batch = DrawBatch::new();
