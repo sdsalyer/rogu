@@ -19,13 +19,13 @@ pub fn combat(ecs: &mut SubWorld, commands: &mut CommandBuffer) {
             .unwrap()
             .get_component_mut::<Health>()
         {
-            dbg!("Health before attack: {}", health.current);
+            // println!("Health before attack: {}", health.current);
             health.current -= 1;
             if health.current < 1 {
                 // dead
                 commands.remove(*target);
             }
-            dbg!("Health after attack: {}", health.current);
+            // println!("Health after attack: {}", health.current);
         }
 
         // consume the message
