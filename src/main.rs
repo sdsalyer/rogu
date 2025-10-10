@@ -79,10 +79,12 @@ impl GameState for State {
         // clear screen if running in terminal?
         // use std::io::{stdout, Write};
         // stdout().flush().expect("Command fail");
-        ctx.set_active_console(0);
-        ctx.cls();
-        ctx.set_active_console(1);
-        ctx.cls();
+
+        // Clear every layer
+        for c in 0..=2 {
+            ctx.set_active_console(c);
+            ctx.cls();
+        }
 
         // add keyboard state as a resource
         self.resources.insert(ctx.key);
@@ -114,7 +116,8 @@ fn main() -> BError {
     // let context = BTermBuilder::simple(124, 32)?
     //let context = BTermBuilder::simple80x50()
 
-    const FONT_FILE: &str = "dungeonfont.png";
+    const FONT_TILE: (&str, i32, i32) = ("dungeonfont.png", 32, 32);
+    const FONT_TEXT: (&str, i32, i32) = ("terminal8x8.png", 8, 8);
 
     let context = BTermBuilder::new()
         .with_title("R O G U !")
@@ -125,9 +128,11 @@ fn main() -> BError {
         .with_dimensions(DISPLAY_WIDTH, DISPLAY_HEIGHT)
         .with_tile_dimensions(32, 32)
         .with_resource_path("resources/")
-        .with_font(FONT_FILE, 32, 32)
-        .with_simple_console(DISPLAY_WIDTH, DISPLAY_HEIGHT, FONT_FILE)
-        .with_simple_console_no_bg(DISPLAY_WIDTH, DISPLAY_HEIGHT, FONT_FILE)
+        .with_font(FONT_TILE.0, FONT_TILE.1, FONT_TILE.2)
+        .with_font(FONT_TEXT.0, FONT_TEXT.1, FONT_TEXT.2)
+        .with_simple_console(DISPLAY_WIDTH, DISPLAY_HEIGHT, FONT_TILE.0) // layer 0
+        .with_simple_console_no_bg(DISPLAY_WIDTH, DISPLAY_HEIGHT, FONT_TILE.0) // layer 1
+        .with_simple_console_no_bg(SCREEN_WIDTH * 2, SCREEN_HEIGHT * 2, FONT_TEXT.0) // layer 2
         .build()?;
 
     main_loop(context, State::new())

@@ -21,7 +21,9 @@ pub fn spawn_enemy(ecs: &mut World, rng: &mut RandomNumberGenerator, pos: Point)
     ));
 }
 
+/// Create a player entity at the given position
 pub fn spawn_player(ecs: &mut World, pos: Point) {
+    const PLAYER_HP: i32 = 20;
     const PLAYER_FG: (u8, u8, u8) = PURPLE;
     const PLAYER_BG: (u8, u8, u8) = BLACK;
     ecs.push((
@@ -30,6 +32,10 @@ pub fn spawn_player(ecs: &mut World, pos: Point) {
         Render {
             color: ColorPair::new(PLAYER_FG, PLAYER_BG),
             glyph: to_cp437('@'),
+        },
+        Health {
+            current: PLAYER_HP,
+            max: PLAYER_HP,
         },
     ));
 }
