@@ -17,8 +17,9 @@ pub fn spawn_amulet_of_yala(ecs: &mut World, pos: Point) {
 }
 
 pub fn spawn_enemy(ecs: &mut World, rng: &mut RandomNumberGenerator, pos: Point) {
-    const MONSTER_FG: (u8, u8, u8) = WHITE;
-    const MONSTER_BG: (u8, u8, u8) = BLACK;
+    const ENEMY_FG: (u8, u8, u8) = WHITE;
+    const ENEMY_BG: (u8, u8, u8) = BLACK;
+    const ENEMY_FOV: i32 = 6;
 
     let (hp, name, glyph) = match rng.roll_dice(1, 10) {
         1..=8 => goblin(),
@@ -29,7 +30,7 @@ pub fn spawn_enemy(ecs: &mut World, rng: &mut RandomNumberGenerator, pos: Point)
         Enemy,
         pos,
         Render {
-            color: ColorPair::new(MONSTER_FG, MONSTER_BG),
+            color: ColorPair::new(ENEMY_FG, ENEMY_BG),
             glyph,
         },
         ChasingPlayer,
@@ -38,6 +39,7 @@ pub fn spawn_enemy(ecs: &mut World, rng: &mut RandomNumberGenerator, pos: Point)
             max: hp,
         },
         Name(name),
+        FieldOfView::new(ENEMY_FOV),
     ));
 }
 
@@ -47,6 +49,7 @@ pub fn spawn_player(ecs: &mut World, pos: Point) {
     const PLAYER_GLYPH: char = '@';
     const PLAYER_FG: (u8, u8, u8) = WHITE;
     const PLAYER_BG: (u8, u8, u8) = BLACK;
+    const PLAYER_FOV: i32 = 8;
     ecs.push((
         Player,
         pos,
@@ -58,6 +61,7 @@ pub fn spawn_player(ecs: &mut World, pos: Point) {
             current: PLAYER_HP,
             max: PLAYER_HP,
         },
+        FieldOfView::new(PLAYER_FOV),
     ));
 }
 
