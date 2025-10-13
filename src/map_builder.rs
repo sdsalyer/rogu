@@ -11,6 +11,9 @@ pub struct MapBuilder {
 
     /// Player spawn point
     pub player_start: Point,
+
+    /// Amulet spawn point
+    pub amulet_start: Point,
 }
 
 impl MapBuilder {
@@ -19,6 +22,7 @@ impl MapBuilder {
             map: Map::new(),
             rooms: Vec::new(),
             player_start: Point::zero(),
+            amulet_start: Point::zero(),
         };
 
         mb.fill(TileType::Wall);
@@ -26,11 +30,34 @@ impl MapBuilder {
         mb.build_corridors(rng);
         mb.player_start = mb.rooms[0].center();
 
+        // place the amulet in the furthest room
+        const MAX_DEPTH: f32 = 1024.0;
+        let search_targets = vec![mb.map.point2d_to_index(mb.player_start)];
+        let dijkstra_map = DijkstraMap::new(
+            SCREEN_WIDTH,
+            SCREEN_HEIGHT,
+            &search_targets,
+            &mb.map,
+            MAX_DEPTH,
+        );
+
+        const UNREACHABLE: &f32 = &f32::MAX;
+        mb.amulet_start = mb.map.index_to_point2d(
+            // find the index of the furthest room
+            dijkstra_map.map
+                .iter()
+                .enumerate()
+                .filter(|(_, dist)| *dist < UNREACHABLE)
+                .max_by(|a, b| a.1.partial_cmp(b.1).unwrap())
+                .unwrap()
+                .0
+        );
+
         mb
     }
 
     fn apply_horizontal_tunnel(&mut self, x1: i32, x2: i32, y: i32) {
-        use std::cmp::{min, max};
+        use std::cmp::{max, min};
         for x in min(x1, x2)..=max(x1, x2) {
             if let Some(idx) = self.map.try_idx(Point::new(x, y)) {
                 self.map.tiles[idx as usize] = TileType::Floor;
@@ -39,7 +66,7 @@ impl MapBuilder {
     }
 
     fn apply_vertical_tunnel(&mut self, y1: i32, y2: i32, x: i32) {
-        use std::cmp::{min, max};
+        use std::cmp::{max, min};
         for y in min(y1, y2)..=max(y1, y2) {
             if let Some(idx) = self.map.try_idx(Point::new(x, y)) {
                 self.map.tiles[idx as usize] = TileType::Floor;
@@ -52,13 +79,13 @@ impl MapBuilder {
         // TODO: Can this be done without clone() ?
         let mut rooms = self.rooms.clone();
 
-        // sort rooms by their center point so we're more likely to 
+        // sort rooms by their center point so we're more likely to
         // connect adjacent rooms
         rooms.sort_by(|a, b| a.center().x.cmp(&b.center().x));
 
         // skip the first room and connect subsequent rooms back to the previous
         for (i, room) in rooms.iter().enumerate().skip(1) {
-            let prev = rooms[i-1].center();
+            let prev = rooms[i - 1].center();
             let curr = room.center();
 
             // randomly tunnel by rows or cols first
