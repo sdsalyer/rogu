@@ -6,10 +6,9 @@ use crate::prelude::*;
 pub fn map_render(ecs: &SubWorld, #[resource] map: &Map, #[resource] camera: &Camera) {
     const DRAW_LAYER: usize = 0;
     const SORT_ORDER: usize = 0;
-    const FLOOR_FG: (u8, u8, u8) = WHITE; // (50, 50, 50);
-    const FLOOR_BG: (u8, u8, u8) = BLACK;
-    const WALL_FG: (u8, u8, u8) = WHITE; // (30, 5, 25);
-    const WALL_BG: (u8, u8, u8) = BLACK;
+    const TILE_FG: (u8, u8, u8) = PALE_GOLDENROD;
+    const TILE_BG: (u8, u8, u8) = BLACK;
+    const SHADOW_FG: (u8, u8, u8) = GRAY39;
 
     let mut draw_batch = DrawBatch::new();
     draw_batch.target(DRAW_LAYER);
@@ -22,11 +21,19 @@ pub fn map_render(ecs: &SubWorld, #[resource] map: &Map, #[resource] camera: &Ca
         for x in camera.left_x..camera.right_x {
             let pt = Point::new(x, y);
             let offset = Point::new(camera.left_x, camera.top_y);
-            if map.in_bounds(pt) && player_fov.visible_tiles.contains(&pt) {
-                let idx = map_idx(x, y);
+            let idx = map_idx(x, y);
+            if map.in_bounds(pt)
+                && (player_fov.visible_tiles.contains(&pt) | map.revealed_tiles[idx])
+            {
+                let tint = if player_fov.visible_tiles.contains(&pt) {
+                    TILE_FG
+                } else {
+                    SHADOW_FG
+                };
+
                 let (cp, glyph) = match map.tiles[idx] {
-                    TileType::Floor => (ColorPair::new(FLOOR_FG, FLOOR_BG), to_cp437('.')),
-                    TileType::Wall => (ColorPair::new(WALL_FG, WALL_BG), to_cp437('#')),
+                    TileType::Floor => (ColorPair::new(tint, BLACK), to_cp437('.')),
+                    TileType::Wall => (ColorPair::new(tint, BLACK), to_cp437('#')),
                 };
 
                 draw_batch.set(pt - offset, cp, glyph);

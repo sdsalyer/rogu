@@ -10,6 +10,9 @@ pub enum TileType {
 pub struct Map {
     /// The map tiles are stored in a single list, in x-order
     pub tiles: Vec<TileType>,
+
+    /// Tracks whether tile at the index is revealed
+    pub revealed_tiles: Vec<bool>,
 }
 
 impl Map {
@@ -17,6 +20,7 @@ impl Map {
     pub fn new() -> Self {
         Self {
             tiles: vec![TileType::Floor; NUM_TILES],
+            revealed_tiles: vec![false; NUM_TILES],
         }
     }
 
