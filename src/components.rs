@@ -30,13 +30,18 @@ pub struct WantsToMove {
 pub struct Name(pub String);
 
 
+/// Chase player 
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub struct ChasingPlayer;
+
+/// Erratic behavior
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub struct MovingRandomly;
+
+
 /// Monsters "tag"
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub struct Enemy;
-
-/// Player "tag"
-#[derive(Clone, Copy, Debug, PartialEq)]
-pub struct MovingRandomly;
 
 /// Player "tag"
 #[derive(Clone, Copy, Debug, PartialEq)]

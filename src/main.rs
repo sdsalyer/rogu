@@ -71,6 +71,52 @@ impl State {
             enemy_systems: build_enemy_scheduler(),
         }
     }
+
+    fn game_over(&mut self, ctx: &mut BTerm) {
+        const DRAW_LAYER: usize = 2;
+
+        ctx.set_active_console(DRAW_LAYER);
+        ctx.print_color_centered(2, RED, BLACK, "Your quest has ended!");
+        ctx.print_color_centered(
+            4,
+            WHITE,
+            BLACK,
+            "Slain by a monster, your hero's journey has come to a premature end...",
+        );
+        ctx.print_color_centered(
+            5,
+            WHITE,
+            BLACK,
+            "The Amulet of Yala remains unclaimed, and your hometown is not saved. :(",
+        );
+        ctx.print_color_centered(
+            8,
+            YELLOW,
+            BLACK,
+            "Don't worry, though -- you can try again with a new hero!",
+        );
+        ctx.print_color_centered(9, GREEN, BLACK, "Press 1 to play again!");
+
+        if let Some(VirtualKeyCode::Key1) = ctx.key {
+            self.ecs = World::default();
+            self.resources = Resources::default();
+
+            let mut rng = RandomNumberGenerator::new();
+            let map_builder = MapBuilder::new(&mut rng);
+
+            spawn_player(&mut self.ecs, map_builder.player_start);
+            map_builder
+                .rooms
+                .iter()
+                .skip(1)
+                .map(|r| r.center())
+                .for_each(|pos| spawn_enemy(&mut self.ecs, &mut rng, pos));
+
+            self.resources.insert(map_builder.map);
+            self.resources.insert(Camera::new(map_builder.player_start));
+            self.resources.insert(TurnState::AwaitingInput);
+        };
+    }
 }
 
 /// Tick implementation
@@ -105,6 +151,7 @@ impl GameState for State {
             TurnState::EnemyTurn => self
                 .enemy_systems
                 .execute(&mut self.ecs, &mut self.resources),
+            TurnState::GameOver => self.game_over(ctx),
         }
 
         // render Draw buffer
