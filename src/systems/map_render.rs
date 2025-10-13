@@ -4,9 +4,9 @@ use crate::prelude::*;
 pub fn map_render(#[resource] map: &Map, #[resource] camera: &Camera) {
     const DRAW_LAYER: usize = 0;
     const SORT_ORDER: usize = 0;
-    const FLOOR_FG: (u8, u8, u8) = (50, 50, 50);
+    const FLOOR_FG: (u8, u8, u8) = WHITE; // (50, 50, 50);
     const FLOOR_BG: (u8, u8, u8) = BLACK;
-    const WALL_FG: (u8, u8, u8) = (30, 5, 25);
+    const WALL_FG: (u8, u8, u8) = WHITE; // (30, 5, 25);
     const WALL_BG: (u8, u8, u8) = BLACK;
 
     let mut draw_batch = DrawBatch::new();
