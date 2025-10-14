@@ -1,7 +1,9 @@
+mod automata;
 mod empty;
 mod rooms;
 
 use crate::prelude::*;
+use automata::CellularAutomataArchitect;
 use empty::EmptyArchitect;
 use rooms::RoomsArchitect;
 
@@ -29,7 +31,8 @@ pub struct MapBuilder {
 impl MapBuilder {
     pub fn new(rng: &mut RandomNumberGenerator) -> Self {
         // let mut architect = EmptyArchitect {};
-        let mut architect = RoomsArchitect {};
+        // let mut architect = RoomsArchitect {};
+        let mut architect = CellularAutomataArchitect {};
         architect.new(rng)
     }
 
@@ -145,5 +148,34 @@ impl MapBuilder {
                 .unwrap()
                 .0,
         )
+    }
+
+    fn spawn_enemies(&self, start: &Point, rng: &mut RandomNumberGenerator) -> Vec<Point> {
+        const NUM_ENEMIES: usize = 50;
+
+        // Find floor tiles > 10 units away from `start`
+        let mut spawnable_tiles: Vec<Point> = self
+            .map
+            .tiles
+            .iter()
+            .enumerate()
+            .filter(|(idx, t)| {
+                **t == TileType::Floor
+                    && DistanceAlg::Pythagoras.distance2d(*start, self.map.index_to_point2d(*idx))
+                        > 10.0
+            })
+            .map(|(idx, _)| self.map.index_to_point2d(idx))
+            .collect();
+
+        // Randomly select a tile as a spawn point
+        let mut spawns = Vec::new();
+        for _ in 0..NUM_ENEMIES {
+            let target_idx = rng.random_slice_index(&spawnable_tiles).unwrap();
+            spawns.push(spawnable_tiles[target_idx].clone());
+            // remove spawn candidate from future iterations
+            spawnable_tiles.remove(target_idx);
+        }
+
+        spawns
     }
 }
