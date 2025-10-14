@@ -1,9 +1,11 @@
 mod automata;
+mod drunkard;
 mod empty;
 mod rooms;
 
 use crate::prelude::*;
 use automata::CellularAutomataArchitect;
+use drunkard::DrunkardsWalkArchitect;
 use empty::EmptyArchitect;
 use rooms::RoomsArchitect;
 
@@ -32,7 +34,16 @@ impl MapBuilder {
     pub fn new(rng: &mut RandomNumberGenerator) -> Self {
         // let mut architect = EmptyArchitect {};
         // let mut architect = RoomsArchitect {};
-        let mut architect = CellularAutomataArchitect {};
+        // let mut architect = CellularAutomataArchitect {};
+        // let mut architect = DrunkardsWalkArchitect {};
+        let mut architect: Box<dyn MapArchitect> = match rng.range(0, 3) {
+            0 => Box::new(DrunkardsWalkArchitect {}),
+            1 => Box::new(RoomsArchitect {}),
+            2 => Box::new(CellularAutomataArchitect {}),
+            // TODO: This would never be reached, right?
+            _ => Box::new(EmptyArchitect {}),
+        };
+
         architect.new(rng)
     }
 
