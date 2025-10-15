@@ -60,6 +60,9 @@ pub struct Name(pub String);
 
 
 
+#[derive(Clone, Debug, PartialEq)]
+pub struct Carried(pub Entity);
+
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub struct ProvidesDungeonMap;
 

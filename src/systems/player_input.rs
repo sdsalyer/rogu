@@ -1,9 +1,11 @@
 use crate::prelude::*;
 
 #[system]
+#[read_component(Carried)]
+#[read_component(Item)]
+#[read_component(Enemy)]
 #[read_component(Point)]
 #[read_component(Player)]
-#[read_component(Enemy)]
 #[write_component(Health)]
 pub fn player_input(
     ecs: &mut SubWorld,
@@ -12,20 +14,32 @@ pub fn player_input(
     #[resource] turn_state: &mut TurnState,
 ) {
     if let Some(key) = key {
-        let delta = match key {
-            VirtualKeyCode::Left | VirtualKeyCode::H => Point::new(-1, 0),
-            VirtualKeyCode::Right | VirtualKeyCode::L => Point::new(1, 0),
-            VirtualKeyCode::Up | VirtualKeyCode::K => Point::new(0, -1),
-            VirtualKeyCode::Down | VirtualKeyCode::J => Point::new(0, 1),
-            _ => Point::zero(),
-        };
-
         // Query the ECS for the player component (tag)
         let mut players = <(Entity, &Point)>::query().filter(component::<Player>());
         let (player, dest) = players
             .iter(ecs) // loop over SubWorld results
-            .find_map(|(entity, pos)| Some((*entity, *pos + delta)))
+            .find_map(|(entity, pos)| Some((*entity, *pos)))
             .unwrap();
+
+        // Find any delta and add it to the dest
+        let delta = match key {
+            VirtualKeyCode::H | VirtualKeyCode::Left => Point::new(-1, 0),
+            VirtualKeyCode::L | VirtualKeyCode::Right => Point::new(1, 0),
+            VirtualKeyCode::K | VirtualKeyCode::Up => Point::new(0, -1),
+            VirtualKeyCode::J | VirtualKeyCode::Down => Point::new(0, 1),
+            VirtualKeyCode::G => {
+                let _ = <(Entity, &Item, &Point)>::query()
+                    .iter(ecs)
+                    .filter(|(_, _, item_pos)| **item_pos == dest)
+                    .for_each(|(entity, _, _)| {
+                        commands.remove_component::<Point>(*entity);
+                        commands.add_component(*entity, Carried(player));
+                    });
+                Point::zero()
+            }
+            _ => Point::zero(),
+        };
+        let dest = dest + delta;
 
         let mut did_action = false;
         let mut enemies = <(Entity, &Point)>::query().filter(component::<Enemy>());
