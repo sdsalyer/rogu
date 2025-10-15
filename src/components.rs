@@ -41,6 +41,14 @@ pub struct Render {
     pub glyph: FontCharType,
 }
 
+
+
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub struct ActivateItem {
+    pub user: Entity,
+    pub item: Entity,
+}
+
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub struct WantsToAttack {
     pub attacker: Entity,
@@ -58,6 +66,18 @@ pub struct WantsToMove {
 #[derive(Clone, Debug, PartialEq)]
 pub struct Name(pub String);
 
+
+
+#[derive(Clone, Debug, PartialEq)]
+pub struct Carried(pub Entity);
+
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub struct ProvidesDungeonMap;
+
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub struct ProvidesHealing {
+    pub amount: i32,
+}
 
 
 /// Chase player 

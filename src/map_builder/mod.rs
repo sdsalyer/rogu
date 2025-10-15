@@ -36,8 +36,8 @@ pub struct MapBuilder {
     /// Each room is a bracket-lib Rect
     pub rooms: Vec<Rect>,
 
-    /// Enemy spawn points
-    pub enemy_spawns: Vec<Point>,
+    /// Potential spawn points
+    pub entity_spawns: Vec<Point>,
 
     /// Player spawn point
     pub player_start: Point,

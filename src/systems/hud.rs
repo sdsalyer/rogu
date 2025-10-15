@@ -1,7 +1,10 @@
 use crate::prelude::*;
 
 #[system]
+#[read_component(Carried)]
 #[read_component(Health)]
+#[read_component(Item)]
+#[read_component(Name)]
 #[read_component(Player)]
 pub fn hud(ecs: &SubWorld) {
     const DRAW_LAYER: usize = 2;
@@ -41,6 +44,28 @@ pub fn hud(ecs: &SubWorld) {
         ),
         ColorPair::new(WHITE, RED),
     );
+
+    // Display inventory
+    let player = <(Entity, &Player)>::query()
+        .iter(ecs)
+        .find_map(|(entity, _)| Some(*entity))
+        .unwrap();
+    let mut y = 3;
+    let _ = <(&Item, &Name, &Carried)>::query()
+        .iter(ecs)
+        .filter(|(_, _, carried)| carried.0 == player)
+        .for_each(|(_, name, _)| {
+            draw_batch.print(Point::new(3, y), format!("{} : {}", y - 2, &name.0));
+            y += 1;
+        });
+
+    if y > 3 {
+        draw_batch.print_color(
+            Point::new(3, 2),
+            "Items carried:",
+            ColorPair::new(YELLOW, BLACK),
+        );
+    }
 
     draw_batch.submit(SORT_ORDER).expect("Batch error");
 }

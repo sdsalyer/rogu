@@ -14,7 +14,7 @@ impl MapArchitect for DrunkardsWalkArchitect {
             map: Map::new(),
             theme: super::themes::DungeonTheme::new(),
             rooms: Vec::new(),
-            enemy_spawns: Vec::new(),
+            entity_spawns: Vec::new(),
             player_start: Point::zero(),
             amulet_start: Point::zero(),
         };
@@ -55,7 +55,7 @@ impl MapArchitect for DrunkardsWalkArchitect {
                 .for_each(|(idx, _)| mb.map.tiles[idx] = TileType::Wall);
         }
 
-        mb.enemy_spawns = mb.spawn_enemies(&center, rng);
+        mb.entity_spawns = mb.spawn_enemies(&center, rng);
         mb.player_start = center;
         mb.amulet_start = mb.find_most_distant();
 
