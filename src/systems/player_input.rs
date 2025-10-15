@@ -2,8 +2,8 @@ use crate::prelude::*;
 
 #[system]
 #[read_component(Carried)]
-#[read_component(Item)]
 #[read_component(Enemy)]
+#[read_component(Item)]
 #[read_component(Point)]
 #[read_component(Player)]
 #[write_component(Health)]
