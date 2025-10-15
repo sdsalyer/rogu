@@ -67,6 +67,7 @@ impl State {
             .for_each(|pos| spawn_enemy(&mut ecs, &mut rng, *pos));
 
         resources.insert(map_builder.map);
+        resources.insert(map_builder.theme);
         resources.insert(Camera::new(map_builder.player_start));
         resources.insert(TurnState::AwaitingInput);
 
@@ -157,6 +158,7 @@ impl State {
             .for_each(|pos| spawn_enemy(&mut self.ecs, &mut rng, *pos));
 
         self.resources.insert(map_builder.map);
+        self.resources.insert(map_builder.theme);
         self.resources.insert(Camera::new(map_builder.player_start));
         self.resources.insert(TurnState::AwaitingInput);
     }

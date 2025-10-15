@@ -12,6 +12,7 @@ impl MapArchitect for DrunkardsWalkArchitect {
     fn new(&mut self, rng: &mut RandomNumberGenerator) -> MapBuilder {
         let mut mb = MapBuilder {
             map: Map::new(),
+            theme: super::themes::DungeonTheme::new(),
             rooms: Vec::new(),
             enemy_spawns: Vec::new(),
             player_start: Point::zero(),

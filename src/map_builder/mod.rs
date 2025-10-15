@@ -3,21 +3,35 @@ mod drunkard;
 mod empty;
 mod prefab;
 mod rooms;
+mod themes;
 
 use crate::prelude::*;
 use automata::CellularAutomataArchitect;
 use drunkard::DrunkardsWalkArchitect;
 use empty::EmptyArchitect;
-use rooms::RoomsArchitect;
 use prefab::*;
+use rooms::RoomsArchitect;
+use themes::*;
 
 pub trait MapArchitect {
     fn new(&mut self, rng: &mut RandomNumberGenerator) -> MapBuilder;
 }
 
+/// MapTheme as a resource for Legion
+/// This is accessed by multiple Systems in different threads
+/// Sync - threadsafe reference sharing
+/// Send - safe transfer across threads (atomic)
+pub trait MapTheme: Sync + Send {
+    // FontCharType is an alias for u16
+    fn tile_to_render(&self, tile_type: TileType) -> FontCharType;
+}
+
 pub struct MapBuilder {
     /// A *copy* of the context's map for working on
     pub map: Map,
+
+    /// Map theme
+    pub theme: Box<dyn MapTheme>,
 
     /// Each room is a bracket-lib Rect
     pub rooms: Vec<Rect>,
@@ -48,6 +62,13 @@ impl MapBuilder {
 
         let mut mb = architect.new(rng);
         try_apply_fortress(&mut mb, rng);
+
+        // pick a random theme
+        mb.theme = match rng.range(0, 2) {
+            0 => DungeonTheme::new(),
+            _ => ForestTheme::new(),
+        };
+
         mb
     }
 
