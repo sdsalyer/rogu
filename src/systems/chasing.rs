@@ -13,17 +13,7 @@ pub fn chasing(#[resource] map: &Map, ecs: &SubWorld, commands: &mut CommandBuff
     let mut player = <(&Point, &Player)>::query();
 
     let (player_pos, _player) = player.iter(ecs).nth(0).unwrap();
-    let player_idx = map_idx(player_pos.x, player_pos.y);
-
-    // Populate Dijkstra map for pathfinding
-    // map "overlay" with each "tile" indicating distance to
-    // a target point
-    // Note: big ones can be slow, and we also supply a max search
-    //       depth to prevent searching the whole map.
-    const MAX_DEPTH: f32 = 1024.0;
-    let search_targets = vec![player_idx];
-    let dijkstra_map =
-        DijkstraMap::new(SCREEN_WIDTH, SCREEN_HEIGHT, &search_targets, map, MAX_DEPTH);
+    let dijkstra_map = map.generate_dijkstra_map(&player_pos);
 
     movers.iter(ecs).for_each(|(entity, pos, _, fov)| {
         // Don't move if entity can't see the player
