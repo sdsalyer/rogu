@@ -3,7 +3,12 @@ use crate::prelude::*;
 #[system]
 #[read_component(FieldOfView)]
 #[read_component(Player)]
-pub fn map_render(ecs: &SubWorld, #[resource] map: &Map, #[resource] camera: &Camera) {
+pub fn map_render(
+    ecs: &SubWorld,
+    #[resource] map: &Map,
+    #[resource] theme: &Box<dyn MapTheme>,
+    #[resource] camera: &Camera,
+) {
     const DRAW_LAYER: usize = 0;
     const SORT_ORDER: usize = 0;
     const TILE_FG: (u8, u8, u8) = PALE_GOLDENROD;
@@ -31,12 +36,10 @@ pub fn map_render(ecs: &SubWorld, #[resource] map: &Map, #[resource] camera: &Ca
                     SHADOW_FG
                 };
 
-                let (cp, glyph) = match map.tiles[idx] {
-                    TileType::Floor => (ColorPair::new(tint, BLACK), to_cp437('.')),
-                    TileType::Wall => (ColorPair::new(tint, BLACK), to_cp437('#')),
-                };
+                let colors = ColorPair::new(tint, BLACK);
+                let glyph = theme.tile_to_render(map.tiles[idx]);
 
-                draw_batch.set(pt - offset, cp, glyph);
+                draw_batch.set(pt - offset, colors, glyph);
             } // end if in bounds
         } // end x loop
     } // end y loop
