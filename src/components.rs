@@ -41,6 +41,14 @@ pub struct Render {
     pub glyph: FontCharType,
 }
 
+
+
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub struct ActivateItem {
+    pub user: Entity,
+    pub item: Entity,
+}
+
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub struct WantsToAttack {
     pub attacker: Entity,

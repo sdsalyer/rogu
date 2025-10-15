@@ -38,6 +38,7 @@ impl Vault {
             let mut can_place = false;
             dimensions.for_each(|pt| {
                 let idx = mb.map.point2d_to_index(pt);
+                // TODO: BUG - index out of bounds: the len is 4000 but the index is 4032
                 let dist = dijkstra_map.map[idx];
                 if dist < UNREACHABLE && dist > NEAREST && mb.amulet_start != pt {
                     can_place = true;
