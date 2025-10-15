@@ -1,6 +1,7 @@
 mod automata;
 mod drunkard;
 mod empty;
+mod prefab;
 mod rooms;
 
 use crate::prelude::*;
@@ -8,6 +9,7 @@ use automata::CellularAutomataArchitect;
 use drunkard::DrunkardsWalkArchitect;
 use empty::EmptyArchitect;
 use rooms::RoomsArchitect;
+use prefab::*;
 
 pub trait MapArchitect {
     fn new(&mut self, rng: &mut RandomNumberGenerator) -> MapBuilder;
@@ -44,7 +46,9 @@ impl MapBuilder {
             _ => Box::new(EmptyArchitect {}),
         };
 
-        architect.new(rng)
+        let mut mb = architect.new(rng);
+        try_apply_fortress(&mut mb, rng);
+        mb
     }
 
     fn apply_horizontal_tunnel(&mut self, x1: i32, x2: i32, y: i32) {
@@ -137,17 +141,8 @@ impl MapBuilder {
     }
 
     fn find_most_distant(&self) -> Point {
-        const MAX_DEPTH: f32 = 1024.0;
-        let search_targets = vec![self.map.point2d_to_index(self.player_start)];
-        let dijkstra_map = DijkstraMap::new(
-            SCREEN_WIDTH,
-            SCREEN_HEIGHT,
-            &search_targets,
-            &self.map,
-            MAX_DEPTH,
-        );
-
         const UNREACHABLE: &f32 = &f32::MAX;
+        let dijkstra_map = &self.map.generate_dijkstra_map(&self.player_start);
         self.map.index_to_point2d(
             // find the index of the furthest room
             dijkstra_map

@@ -41,15 +41,7 @@ impl MapArchitect for DrunkardsWalkArchitect {
             );
 
             // generate a dijkstra map
-            const MAX_DEPTH: f32 = 1024.0;
-            let search_targets = vec![mb.map.point2d_to_index(center)];
-            let dijkstra_map = DijkstraMap::new(
-                SCREEN_WIDTH,
-                SCREEN_HEIGHT,
-                &search_targets,
-                &mb.map,
-                MAX_DEPTH,
-            );
+            let dijkstra_map = mb.map.generate_dijkstra_map(&center);
 
             // use the map to change any unreachable tiles to walls
             // TODO: Not sure the reasoning for using 2000 (tiles from center?)

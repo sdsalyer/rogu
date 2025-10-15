@@ -30,6 +30,21 @@ impl Map {
         self.in_bounds(point) && self.tiles[map_idx(point.x, point.y)] == TileType::Floor
     }
 
+    /// Generate a Dijkstra Map from a given Point
+    /// Uses screen width and height as the search area and 1024.0 as the depth.
+    pub fn generate_dijkstra_map(&self, search_target: &Point) -> DijkstraMap {
+        // generate a dijkstra map
+        const MAX_DEPTH: f32 = 1024.0;
+        let search_targets = vec![self.point2d_to_index(*search_target)];
+        DijkstraMap::new(
+            SCREEN_WIDTH,
+            SCREEN_HEIGHT,
+            &search_targets,
+            self,
+            MAX_DEPTH,
+        )
+    }
+
     /// check whether point is on the screen
     pub fn in_bounds(&self, point: Point) -> bool {
         point.x >= 0 && point.x < SCREEN_WIDTH && point.y >= 0 && point.y < SCREEN_HEIGHT
