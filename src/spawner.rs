@@ -43,6 +43,47 @@ pub fn spawn_enemy(ecs: &mut World, rng: &mut RandomNumberGenerator, pos: Point)
     ));
 }
 
+pub fn spawn_entity(ecs: &mut World, rng: &mut RandomNumberGenerator, pos: Point) {
+    let roll = rng.roll_dice(1, 6);
+    match roll {
+        1 => spawn_healing_potion(ecs, pos),
+        2 => spawn_magic_mapper(ecs, pos),
+        _ => spawn_enemy(ecs, rng, pos),
+    }
+}
+
+pub fn spawn_healing_potion(ecs: &mut World, pos: Point) {
+    const ITEM_GLYPH: char = '!';
+    const ITEM_FG: (u8, u8, u8) = WHITE;
+    const ITEM_BG: (u8, u8, u8) = BLACK;
+    ecs.push((
+        Item,
+        pos,
+        Render {
+            color: ColorPair::new(ITEM_FG, ITEM_BG),
+            glyph: to_cp437(ITEM_GLYPH),
+        },
+        Name("Healing Potion".to_string()),
+        ProvidesHealing { amount: 6 },
+    ));
+}
+
+pub fn spawn_magic_mapper(ecs: &mut World, pos: Point) {
+    const ITEM_GLYPH: char = '{';
+    const ITEM_FG: (u8, u8, u8) = WHITE;
+    const ITEM_BG: (u8, u8, u8) = BLACK;
+    ecs.push((
+        Item,
+        pos,
+        Render {
+            color: ColorPair::new(ITEM_FG, ITEM_BG),
+            glyph: to_cp437(ITEM_GLYPH),
+        },
+        Name("Dungeon Map".to_string()),
+        ProvidesDungeonMap {},
+    ));
+}
+
 /// Create a player entity at the given position
 pub fn spawn_player(ecs: &mut World, pos: Point) {
     const PLAYER_HP: i32 = 10;

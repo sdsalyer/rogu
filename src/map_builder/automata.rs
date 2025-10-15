@@ -10,7 +10,7 @@ impl MapArchitect for CellularAutomataArchitect {
             map: Map::new(),
             theme: super::themes::DungeonTheme::new(),
             rooms: Vec::new(),
-            enemy_spawns: Vec::new(),
+            entity_spawns: Vec::new(),
             player_start: Point::zero(),
             amulet_start: Point::zero(),
         };
@@ -22,7 +22,7 @@ impl MapArchitect for CellularAutomataArchitect {
         }
 
         let start = self.find_start(&mb.map);
-        mb.enemy_spawns = mb.spawn_enemies(&start, rng);
+        mb.entity_spawns = mb.spawn_enemies(&start, rng);
         mb.player_start = start;
         mb.amulet_start = mb.find_most_distant();
 

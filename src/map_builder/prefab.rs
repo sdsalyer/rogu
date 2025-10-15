@@ -47,7 +47,7 @@ impl Vault {
             if can_place {
                 placement = Some(Point::new(dimensions.x1, dimensions.y1));
                 let points = dimensions.point_set();
-                mb.enemy_spawns.retain(|pt| !points.contains(pt));
+                mb.entity_spawns.retain(|pt| !points.contains(pt));
             }
 
             attempts += 1;
@@ -68,7 +68,7 @@ impl Vault {
                     match c {
                         'M' => {
                             mb.map.tiles[idx] = TileType::Floor;
-                            mb.enemy_spawns.push(Point::new(tx, ty));
+                            mb.entity_spawns.push(Point::new(tx, ty));
                         }
                         '-' => mb.map.tiles[idx] = TileType::Floor,
                         '#' => mb.map.tiles[idx] = TileType::Wall,

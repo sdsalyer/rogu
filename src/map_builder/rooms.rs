@@ -10,7 +10,7 @@ impl MapArchitect for RoomsArchitect {
             map: Map::new(),
             theme: super::themes::DungeonTheme::new(),
             rooms: Vec::new(),
-            enemy_spawns: Vec::new(),
+            entity_spawns: Vec::new(),
             player_start: Point::zero(),
             amulet_start: Point::zero(),
         };
@@ -27,7 +27,7 @@ impl MapArchitect for RoomsArchitect {
 
         // 1 monster per room (except the first)
         for r in mb.rooms.iter().skip(1) {
-            mb.enemy_spawns.push(r.center());
+            mb.entity_spawns.push(r.center());
         }
 
         mb

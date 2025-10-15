@@ -10,7 +10,7 @@ impl MapArchitect for EmptyArchitect {
             map: Map::new(),
             theme: super::themes::DungeonTheme::new(),
             rooms: Vec::new(),
-            enemy_spawns: Vec::new(),
+            entity_spawns: Vec::new(),
             player_start: Point::zero(),
             amulet_start: Point::zero(),
         };
@@ -26,7 +26,7 @@ impl MapArchitect for EmptyArchitect {
         println!("amulet start {:?}", mb.amulet_start);
 
         for _ in 0..50 {
-            mb.enemy_spawns.push(Point::new(
+            mb.entity_spawns.push(Point::new(
                 rng.range(1, SCREEN_WIDTH),
                 rng.range(1, SCREEN_HEIGHT),
             ));

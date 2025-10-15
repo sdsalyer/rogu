@@ -60,6 +60,15 @@ pub struct Name(pub String);
 
 
 
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub struct ProvidesDungeonMap;
+
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub struct ProvidesHealing {
+    pub amount: i32,
+}
+
+
 /// Chase player 
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub struct ChasingPlayer;

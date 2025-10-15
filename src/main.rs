@@ -51,20 +51,10 @@ impl State {
         // Populate player and enemies
         spawn_player(&mut ecs, map_builder.player_start);
         spawn_amulet_of_yala(&mut ecs, map_builder.amulet_start);
-        /*
-                map_builder
-                    .rooms
-                    .iter()
-                    .skip(1) // 1 monster per room except the first
-                    .map(|r| r.center())
-                    .for_each(|pos| {
-                        spawn_enemy(&mut ecs, &mut rng, pos);
-                    });
-        */
         map_builder
-            .enemy_spawns
+            .entity_spawns
             .iter()
-            .for_each(|pos| spawn_enemy(&mut ecs, &mut rng, *pos));
+            .for_each(|pos| spawn_entity(&mut ecs, &mut rng, *pos));
 
         resources.insert(map_builder.map);
         resources.insert(map_builder.theme);
@@ -144,18 +134,10 @@ impl State {
 
         spawn_player(&mut self.ecs, map_builder.player_start);
         spawn_amulet_of_yala(&mut self.ecs, map_builder.amulet_start);
-        /*
-                map_builder
-                    .rooms
-                    .iter()
-                    .skip(1)
-                    .map(|r| r.center())
-                    .for_each(|pos| spawn_enemy(&mut self.ecs, &mut rng, pos));
-        */
         map_builder
-            .enemy_spawns
+            .entity_spawns
             .iter()
-            .for_each(|pos| spawn_enemy(&mut self.ecs, &mut rng, *pos));
+            .for_each(|pos| spawn_entity(&mut self.ecs, &mut rng, *pos));
 
         self.resources.insert(map_builder.map);
         self.resources.insert(map_builder.theme);
