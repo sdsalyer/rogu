@@ -2,7 +2,6 @@ pub use crate::prelude::*;
 
 use std::collections::HashSet;
 
-
 /// Tiles an entity can see
 #[derive(Clone, Debug, PartialEq)]
 pub struct FieldOfView {
@@ -41,8 +40,6 @@ pub struct Render {
     pub glyph: FontCharType,
 }
 
-
-
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub struct ActivateItem {
     pub user: Entity,
@@ -61,12 +58,8 @@ pub struct WantsToMove {
     pub destination: Point,
 }
 
-
-
 #[derive(Clone, Debug, PartialEq)]
 pub struct Name(pub String);
-
-
 
 #[derive(Clone, Debug, PartialEq)]
 pub struct Carried(pub Entity);
@@ -79,16 +72,13 @@ pub struct ProvidesHealing {
     pub amount: i32,
 }
 
-
-/// Chase player 
+/// Chase player
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub struct ChasingPlayer;
 
 /// Erratic behavior
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub struct MovingRandomly;
-
-
 
 /// THE item
 #[derive(Clone, Copy, Debug, PartialEq)]
@@ -104,4 +94,6 @@ pub struct Enemy;
 
 /// Player "tag"
 #[derive(Clone, Copy, Debug, PartialEq)]
-pub struct Player;
+pub struct Player {
+    pub map_level: u32,
+}

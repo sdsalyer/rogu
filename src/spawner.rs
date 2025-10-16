@@ -92,7 +92,7 @@ pub fn spawn_player(ecs: &mut World, pos: Point) {
     const PLAYER_BG: (u8, u8, u8) = BLACK;
     const PLAYER_FOV: i32 = 8;
     ecs.push((
-        Player,
+        Player { map_level: 0 },
         pos,
         Render {
             color: ColorPair::new(PLAYER_FG, PLAYER_BG),
