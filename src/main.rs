@@ -46,11 +46,14 @@ impl State {
         // let seed = 1337;
         // let mut rng = RandomNumberGenerator::seeded(seed);
         let mut rng = RandomNumberGenerator::new();
-        let map_builder = MapBuilder::new(&mut rng);
+        let mut map_builder = MapBuilder::new(&mut rng);
 
         // Populate player and enemies
         spawn_player(&mut ecs, map_builder.player_start);
-        spawn_amulet_of_yala(&mut ecs, map_builder.amulet_start);
+        // spawn_amulet_of_yala(&mut ecs, map_builder.amulet_start);
+        let exit_idx = map_builder.map.point2d_to_index(map_builder.amulet_start);
+        map_builder.map.tiles[exit_idx] = TileType::Exit;
+
         map_builder
             .entity_spawns
             .iter()
@@ -130,10 +133,86 @@ impl State {
         self.resources = Resources::default();
 
         let mut rng = RandomNumberGenerator::new();
-        let map_builder = MapBuilder::new(&mut rng);
+        let mut map_builder = MapBuilder::new(&mut rng);
 
         spawn_player(&mut self.ecs, map_builder.player_start);
-        spawn_amulet_of_yala(&mut self.ecs, map_builder.amulet_start);
+        //spawn_amulet_of_yala(&mut self.ecs, map_builder.amulet_start);
+        let exit_idx = map_builder.map.point2d_to_index(map_builder.amulet_start);
+        map_builder.map.tiles[exit_idx] = TileType::Exit;
+
+        map_builder
+            .entity_spawns
+            .iter()
+            .for_each(|pos| spawn_entity(&mut self.ecs, &mut rng, *pos));
+
+        self.resources.insert(map_builder.map);
+        self.resources.insert(map_builder.theme);
+        self.resources.insert(Camera::new(map_builder.player_start));
+        self.resources.insert(TurnState::AwaitingInput);
+    }
+
+    fn advance_level(&mut self) {
+        use std::collections::HashSet;
+
+        // Get the player
+        let player_entity = *<Entity>::query()
+            .filter(component::<Player>())
+            .iter(&mut self.ecs)
+            .nth(0)
+            .unwrap();
+
+        // Keep the player and their items
+        let mut to_keep = HashSet::new();
+        to_keep.insert(player_entity);
+        let _ = <(Entity, &Carried)>::query()
+            .iter(&self.ecs)
+            .filter(|(_, carried)| carried.0 == player_entity)
+            .map(|(entity, _)| *entity)
+            .for_each(|entity| {
+                to_keep.insert(entity);
+            });
+
+        // Remove everything else
+        let mut cb = CommandBuffer::new(&mut self.ecs);
+        for e in Entity::query().iter(&self.ecs) {
+            if !to_keep.contains(e) {
+                cb.remove(*e);
+            }
+        }
+        // TODO: 2nd parameter is not required in Hands-on Rust book version of Legion
+        cb.flush(&mut self.ecs, &mut self.resources);
+
+        // Set all FoV to dirty so they are recalculated in the new map
+        let _ = <&mut FieldOfView>::query()
+            .iter_mut(&mut self.ecs)
+            .for_each(|fov| {
+                fov.is_dirty = true;
+            });
+
+        // Create a new map
+        let mut rng = RandomNumberGenerator::new();
+        let mut map_builder = MapBuilder::new(&mut rng);
+
+        // Add the player
+        let mut map_level = 0;
+        let _ = <(&mut Player, &mut Point)>::query()
+            .iter_mut(&mut self.ecs)
+            .for_each(|(player, pos)| {
+                player.map_level += 1;
+                map_level = player.map_level;
+                pos.x = map_builder.player_start.x;
+                pos.y = map_builder.player_start.y;
+            });
+
+        // Spawn stairs or Amulet of Yala depending on level
+        if map_level == 2 {
+            spawn_amulet_of_yala(&mut self.ecs, map_builder.amulet_start);
+        } else {
+            let exit_idx = map_builder.map.point2d_to_index(map_builder.amulet_start);
+            map_builder.map.tiles[exit_idx] = TileType::Exit;
+        }
+
+        // Spawn entitities and add resources
         map_builder
             .entity_spawns
             .iter()
@@ -178,6 +257,7 @@ impl GameState for State {
             TurnState::EnemyTurn => self
                 .enemy_systems
                 .execute(&mut self.ecs, &mut self.resources),
+            TurnState::NextLevel => self.advance_level(),
             TurnState::GameOver => self.game_over(ctx),
             TurnState::Victory => self.victory(ctx),
         }

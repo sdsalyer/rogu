@@ -45,6 +45,18 @@ pub fn hud(ecs: &SubWorld) {
         ColorPair::new(WHITE, RED),
     );
 
+    // Current level display
+    let map_level = <(Entity, &Player)>::query()
+        .iter(ecs)
+        .find_map(|(_, p)| Some(p.map_level))
+        .unwrap();
+    // Print right-justified
+    draw_batch.print_color_right(
+        Point::new(SCREEN_WIDTH*2, 1),
+        format!("Dungeon Level: {}", map_level+1),
+        ColorPair::new(YELLOW, BLACK),
+    );
+
     // Display inventory
     let player = <(Entity, &Player)>::query()
         .iter(ecs)
