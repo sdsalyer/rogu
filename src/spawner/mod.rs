@@ -35,6 +35,7 @@ pub fn spawn_level(
 /// Create a player entity at the given position
 pub fn spawn_player(ecs: &mut World, pos: Point) {
     const PLAYER_HP: i32 = 10;
+    const PLAYER_DMG: i32 = 1;
     const PLAYER_GLYPH: char = '@';
     const PLAYER_FG: (u8, u8, u8) = WHITE;
     const PLAYER_BG: (u8, u8, u8) = BLACK;
@@ -50,6 +51,7 @@ pub fn spawn_player(ecs: &mut World, pos: Point) {
             current: PLAYER_HP,
             max: PLAYER_HP,
         },
+        Damage(PLAYER_DMG),
         FieldOfView::new(PLAYER_FOV),
     ));
 }

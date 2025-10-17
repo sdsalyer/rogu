@@ -30,13 +30,25 @@ pub fn player_input(
             VirtualKeyCode::J | VirtualKeyCode::Down => Point::new(0, 1),
 
             // Inventory
-            VirtualKeyCode::G => {
+            VirtualKeyCode::P | VirtualKeyCode::G => {
                 let _ = <(Entity, &Item, &Point)>::query()
                     .iter(ecs)
                     .filter(|(_, _, item_pos)| **item_pos == dest)
                     .for_each(|(entity, _, _)| {
                         commands.remove_component::<Point>(*entity);
                         commands.add_component(*entity, Carried(player));
+
+                        // Can carry only 1 weapon
+                        if let Ok(e) = ecs.entry_ref(*entity) {
+                            if e.get_component::<Weapon>().is_ok() {
+                                <(Entity, &Carried, &Weapon)>::query()
+                                    .iter(ecs)
+                                    .filter(|(_, carried, _)| carried.0 == player)
+                                    .for_each(|(e, _, _)| {
+                                        commands.remove(*e);
+                                    });
+                            }
+                        }
                     });
                 Point::zero()
             }

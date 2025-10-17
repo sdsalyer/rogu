@@ -14,6 +14,7 @@ pub struct Template {
     pub glyph: char,
     pub provides: Option<Vec<(String, i32)>>,
     pub hp: Option<i32>,
+    pub base_damage: Option<i32>,
 }
 
 #[derive(Clone, Deserialize, Debug, PartialEq)]
@@ -91,6 +92,7 @@ impl Templates {
         }
 
         // Apply optional components
+        // Effects..
         if let Some(effects) = &template.provides {
             let _ = effects
                 .iter()
@@ -99,6 +101,14 @@ impl Templates {
                     "MagicMap" => commands.add_component(entity, ProvidesDungeonMap {}),
                     _ => eprintln!("Unknown entity effect: {}", provides),
                 });
+        };
+
+        // Damage
+        if let Some(damage) = &template.base_damage {
+            commands.add_component(entity, Damage(*damage));
+            if template.entity_type == EntityType::Item {
+                commands.add_component(entity, Weapon {});
+            }
         };
     }
 }
