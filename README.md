@@ -26,9 +26,9 @@ project.
 Otherwise, there's a few more things that could be interesting to pursue
 (in no particular order):
 
--[ ] A* pathfinding
--[ ] Animations & Particles
--[ ] Ranged combat and/or spells
--[ ] Expanded enemies, items, and levels
--[ ] Explore additional procgen algorithms (Wave Function Collapse, etc.)
--[ ] Save state
+- [ ] A* pathfinding
+- [ ] Animations & Particles
+- [ ] Ranged combat and/or spells
+- [ ] Expanded enemies, items, and levels
+- [ ] Explore additional procgen algorithms (Wave Function Collapse, etc.)
+- [ ] Save state
