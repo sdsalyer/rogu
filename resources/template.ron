@@ -23,9 +23,23 @@ Templates(
         // Equipment
         Template(
             entity_type: Item,
-            name : "Rusty Sword", glyph : '/', levels : [ 0, 1, 2 ],
+            name : "Rusty Sword", glyph : 's', levels : [ 0, 1 ],
             frequency: 1,
             base_damage: Some(1),
+        ),
+
+        Template(
+            entity_type: Item,
+            name : "Shiny Sword", glyph : 'S', levels : [ 0, 1, 2 ],
+            frequency: 1,
+            base_damage: Some(1),
+        ),
+
+        Template(
+            entity_type: Item,
+            name : "EPIC Sword", glyph : '/', levels : [ 1, 2 ],
+            frequency: 1,
+            base_damage: Some(3),
         ),
 
         // Enemies
