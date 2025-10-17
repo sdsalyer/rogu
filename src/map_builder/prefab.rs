@@ -10,7 +10,6 @@ impl Vault {
     pub fn new(template: &str) -> Self {
         let width = template.lines().max().unwrap().len();
         let height = template.lines().filter(|x| x.trim().len() != 0).count();
-        println!("Vault = {}w, {}h", width, height);
         Self {
             template: template.to_string(),
             width: width.try_into().unwrap(),

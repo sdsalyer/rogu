@@ -1,7 +1,7 @@
 [package]
 name = "rogu"
 version = "0.1.0"
-edition = "2021"
+edition = "2024"
 
 [dependencies]
 # Default OpenGL backend doesn't currently work with Wayland due to use of old
@@ -16,3 +16,6 @@ serde = { version = "1.0.228" }
 # Crossterm backend doesn't currently work unless specify *exact* terminal dimensions
 #bracket-lib = { version = "~0.8", default-features = false, features = ["crossterm"]}
 #bracket-lib = { path = "../bracket-lib", default-features = false, features = ["crossterm"]}
+
+[profile.release]
+lto = "thin"
