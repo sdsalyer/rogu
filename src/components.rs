@@ -72,6 +72,7 @@ pub struct ProvidesHealing {
     pub amount: i32,
 }
 
+
 /// Chase player
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub struct ChasingPlayer;
@@ -88,11 +89,20 @@ pub struct AmuletOfYala;
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub struct Item;
 
-/// Monsters "tag"
+/// Weapons 
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub struct Weapon;
+
+/// deals damage 
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub struct Damage(pub i32);
+
+
+/// Enemies 
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub struct Enemy;
 
-/// Player "tag"
+/// Player
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub struct Player {
     pub map_level: u32,
