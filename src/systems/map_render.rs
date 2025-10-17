@@ -22,7 +22,7 @@ pub fn map_render(
     let player_fov = fov.iter(ecs).nth(0).unwrap();
 
     // add each map tile to the draw batch for rendering
-    for y in camera.top_y..camera.bottom_y {
+    for y in camera.top_y..=camera.bottom_y {
         for x in camera.left_x..camera.right_x {
             let pt = Point::new(x, y);
             let offset = Point::new(camera.left_x, camera.top_y);

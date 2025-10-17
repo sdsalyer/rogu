@@ -29,8 +29,8 @@ impl Vault {
         let mut attempts = 0;
         while placement.is_none() && attempts < MAX_ATTEMPTS {
             let dimensions = Rect::with_size(
-                rng.range(0, SCREEN_WIDTH),
-                rng.range(0, SCREEN_HEIGHT),
+                rng.range(0, SCREEN_WIDTH - self.width),
+                rng.range(0, SCREEN_HEIGHT - self.height),
                 self.width,
                 self.height,
             );
